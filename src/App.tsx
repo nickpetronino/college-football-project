@@ -1,10 +1,27 @@
 import './App.css';
+import {
+    Button,
+    Card,
+    CardContent,
+    Typography,
+    Stack,
+    Chip,
+    Box,
+    AppBar,
+    Container,
+    Toolbar,
+} from '@mui/material';
+
+import { Home, Group, Settings, Info } from '@mui/icons-material';
 
 function App() {
     return (
-        <div>
-            <h1>College Football Project</h1>
-        </div>
+        <Box
+            mx={'auto'}
+            maxWidth={'xl'}
+        >
+            Hello World
+        </Box>
     );
 }
 
