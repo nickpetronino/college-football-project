@@ -13,6 +13,7 @@ import {
 } from '@mui/material';
 
 import { Home, Group, Settings, Info } from '@mui/icons-material';
+import SeasonTimeline from './components/SeasonTimeline';
 
 function App() {
     return (
@@ -20,7 +21,7 @@ function App() {
             mx={'auto'}
             maxWidth={'xl'}
         >
-            Hello World
+            <SeasonTimeline />
         </Box>
     );
 }
