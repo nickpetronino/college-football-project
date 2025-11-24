@@ -1,8 +1,10 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import DynamicTabList from './DynamicTabList';
 
 export default function SeasonTimeline() {
     const [activeId, setActiveId] = useState<string | null>(null);
+    const navigate = useNavigate();
 
     const seasonGroups = [
         {
@@ -92,6 +94,17 @@ export default function SeasonTimeline() {
     const handleItemClick = (itemId: string, groupId: string) => {
         setActiveId(itemId);
         console.log(`Selected item: ${itemId} from group: ${groupId}`);
+
+        // Navigate based on the item type
+        if (
+            itemId.startsWith('week') ||
+            itemId === 'conf-championship' ||
+            itemId.startsWith('bowl-week')
+        ) {
+            navigate(`/week/${itemId}`);
+        } else {
+            navigate(`/phase/${itemId}`);
+        }
     };
 
     return (

@@ -1,28 +1,62 @@
 import './App.css';
 import {
-    Button,
-    Card,
-    CardContent,
-    Typography,
-    Stack,
-    Chip,
-    Box,
-    AppBar,
-    Container,
-    Toolbar,
-} from '@mui/material';
-
-import { Home, Group, Settings, Info } from '@mui/icons-material';
-import SeasonTimeline from './components/SeasonTimeline';
+    BrowserRouter as Router,
+    Routes,
+    Route,
+    Navigate,
+} from 'react-router-dom';
+import { Box } from '@mui/material';
+import GameWeek from './pages/GameWeek';
+import SeasonPhase from './pages/SeasonPhase';
+import HomePage from './pages/Home';
+import CoachLanding from './pages/CoachLanding';
+import CoachSetup from './pages/CoachSetup';
+import Schedule from './components/Schedule';
 
 function App() {
     return (
-        <Box
-            mx={'auto'}
-            maxWidth={'xl'}
-        >
-            <SeasonTimeline />
-        </Box>
+        <Router>
+            <Box
+                mx={'auto'}
+                maxWidth={'xl'}
+            >
+                <Routes>
+                    <Route
+                        path="/"
+                        element={<HomePage />}
+                    />
+                    <Route
+                        path="/coach"
+                        element={<CoachLanding />}
+                    />
+                    <Route
+                        path="/:coachId/setup"
+                        element={<CoachSetup />}
+                    />
+                    <Route
+                        path="/week/:weekId"
+                        element={<GameWeek />}
+                    />
+                    <Route
+                        path="/phase/:phaseId"
+                        element={<SeasonPhase />}
+                    />
+                    <Route
+                        path="/schedule"
+                        element={<Schedule />}
+                    />
+                    <Route
+                        path="*"
+                        element={
+                            <Navigate
+                                to="/"
+                                replace
+                            />
+                        }
+                    />
+                </Routes>
+            </Box>
+        </Router>
     );
 }
 

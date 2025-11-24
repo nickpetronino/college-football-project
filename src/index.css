@@ -144,16 +144,12 @@ a:visited {
     color: var(--color-primary);
 }
 
-/* Button reset */
+/* Button reset - minimal reset to allow custom styling */
 button {
     font-family: inherit;
     font-size: inherit;
     line-height: inherit;
     cursor: pointer;
-    border: none;
-    background: none;
-    padding: 0;
-    color: inherit;
 }
 
 button:disabled {

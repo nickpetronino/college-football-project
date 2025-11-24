@@ -92,6 +92,7 @@ export default function DynamicTabList({
                                         border-l border-gray-300 dark:border-gray-600
                                         first:border-l-0
                                         hover:bg-gray-100 dark:hover:bg-gray-700
+                                        select-none
                                         ${
                                             isActive
                                                 ? 'bg-blue-500 text-white hover:bg-blue-600 font-semibold'
@@ -123,7 +124,8 @@ export default function DynamicTabList({
                                                     text-center text-sm whitespace-nowrap
                                                     border-l border-gray-300 dark:border-gray-600
                                                     first:border-l-0
-                                                    // hover:bg-gray-200 dark:hover:bg-gray-600
+                                                // hover:bg-gray-200 dark:hover:bg-gray-600
+                                                select-none
                                                     ${
                                                         isChildActive
                                                             ? 'bg-blue-500 text-white hover:bg-blue-600 font-semibold'
