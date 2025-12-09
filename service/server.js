@@ -19,6 +19,8 @@ const { errorHandler, notFound } = require('./middleware/errorMiddleware');
 // Import routes
 const healthRoutes = require('./routes/healthRoutes');
 const scheduleRoutes = require('./routes/scheduleRoutes');
+const schoolRoutes = require('./routes/schoolRoutes');
+const coachRoutes = require('./routes/coachRoutes');
 // Add more route imports here as you build them
 // const teamRoutes = require('./routes/teamRoutes');
 // const playerRoutes = require('./routes/playerRoutes');
@@ -45,6 +47,8 @@ if (process.env.NODE_ENV === 'development') {
 const API_VERSION = process.env.API_VERSION || 'v1';
 app.use(`/api/${API_VERSION}/health`, healthRoutes);
 app.use(`/api/${API_VERSION}/schedules`, scheduleRoutes);
+app.use(`/api/${API_VERSION}/schools`, schoolRoutes);
+app.use(`/api/${API_VERSION}/coaches`, coachRoutes);
 // Add more routes here
 // app.use(`/api/${API_VERSION}/teams`, teamRoutes);
 // app.use(`/api/${API_VERSION}/players`, playerRoutes);

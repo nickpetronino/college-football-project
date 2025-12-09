@@ -1,26 +1,77 @@
 import { useState } from 'react';
-import { useParams } from 'react-router-dom';
-import { FBSSchools } from '../data/fbsSchools';
+import { useParams, useNavigate } from 'react-router-dom';
+import SchoolAutocomplete from '../components/inputs/SchoolAutocomplete';
+import type { School } from '../utils/schoolApi';
+import { createCoach } from '../utils/coachApi';
 
 export default function CoachSetup() {
     const { coachId } = useParams<{ coachId: string }>();
-    const [selectedTeam, setSelectedTeam] = useState('');
+    const navigate = useNavigate();
+    const [selectedTeam, setSelectedTeam] = useState<School | null>(null);
     const [style, setStyle] = useState<'Motivator' | 'Recruiter' | 'Tactician'>(
         'Motivator'
     );
     const [firstName, setFirstName] = useState('');
     const [lastName, setLastName] = useState('');
-    const [almaMater, setAlmaMater] = useState('');
+    const [almaMater, setAlmaMater] = useState<School | null>(null);
     const [pipeline, setPipeline] = useState('');
+    const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
 
     const styleOptions = ['Motivator', 'Recruiter', 'Tactician'] as const;
 
+    console.log('Selected Team', selectedTeam);
+
     const isFormComplete =
-        selectedTeam.trim() !== '' &&
+        selectedTeam !== null &&
         firstName.trim() !== '' &&
         lastName.trim() !== '' &&
-        almaMater.trim() !== '' &&
+        almaMater !== null &&
         pipeline.trim() !== '';
+
+    console.log(
+        'Is form Complete?',
+
+        selectedTeam !== null,
+        firstName.trim() !== '',
+        lastName.trim() !== '',
+        almaMater !== null,
+        pipeline.trim() !== ''
+    );
+
+    const handleBeginPlaythrough = async () => {
+        if (!isFormComplete || !coachId || !selectedTeam || !almaMater) {
+            return;
+        }
+
+        setIsLoading(true);
+        setError(null);
+
+        try {
+            await createCoach({
+                playthroughId: coachId,
+                firstName: firstName.trim(),
+                lastName: lastName.trim(),
+                style,
+                selectedTeam: selectedTeam._id,
+                almaMater: almaMater._id,
+                pipeline: pipeline.trim(),
+            });
+
+            // Navigate to home page after successful creation
+            // TODO: Navigate to coach dashboard/landing page when available
+            navigate('/');
+        } catch (err) {
+            setError(
+                err instanceof Error
+                    ? err.message
+                    : 'Failed to create playthrough. Please try again.'
+            );
+            console.error('Error creating playthrough:', err);
+        } finally {
+            setIsLoading(false);
+        }
+    };
 
     return (
         <div className="min-h-screen flex flex-col justify-center gap-3">
@@ -36,35 +87,10 @@ export default function CoachSetup() {
             <div className="mx-auto flex max-w-5xl flex-col gap-10 px-6 py-16 md:gap-12">
                 <section className="rounded-[32px] border border-white/10 bg-white/5 p-8 shadow-2xl shadow-black/40 backdrop-blur-lg">
                     <div className="mt-8 space-y-6">
-                        <div>
-                            <p className="text-xs font-semibold uppercase tracking-[0.5em] text-white/60">
-                                Team
-                            </p>
-                            <div className="mt-3 rounded-2xl border border-white/10 bg-white/5 px-4 py-3 backdrop-blur">
-                                <select
-                                    className="w-full bg-transparent text-sm text-white outline-none"
-                                    value={selectedTeam}
-                                    onChange={(event) =>
-                                        setSelectedTeam(event.target.value)
-                                    }
-                                >
-                                    <option
-                                        value=""
-                                        disabled
-                                    >
-                                        Select a team
-                                    </option>
-                                    {FBSSchools.map((school) => (
-                                        <option
-                                            key={school.name}
-                                            value={school.name}
-                                        >
-                                            {school.name}
-                                        </option>
-                                    ))}
-                                </select>
-                            </div>
-                        </div>
+                        <SchoolAutocomplete
+                            value={selectedTeam}
+                            onChange={setSelectedTeam}
+                        />
 
                         <div className="rounded-[28px] border border-white/10 bg-slate-900/40 p-6 backdrop-blur">
                             <div className="flex items-center justify-between">
@@ -80,6 +106,7 @@ export default function CoachSetup() {
                                 <label className="space-y-2 text-xs uppercase tracking-[0.4em] text-white/60">
                                     <span>First Name</span>
                                     <input
+                                        data-lpignore="true"
                                         type="text"
                                         className="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white outline-none placeholder:text-white/40"
                                         placeholder="First name"
@@ -93,6 +120,7 @@ export default function CoachSetup() {
                                 <label className="space-y-2 text-xs uppercase tracking-[0.4em] text-white/60">
                                     <span>Last Name</span>
                                     <input
+                                        data-lpignore="true"
                                         type="text"
                                         className="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white outline-none placeholder:text-white/40"
                                         placeholder="Last name"
@@ -129,28 +157,10 @@ export default function CoachSetup() {
                                 <label className="space-y-2 text-xs uppercase tracking-[0.4em] text-white/60">
                                     <span>Alma Mater</span>
 
-                                    <select
-                                        className="w-full bg-transparent text-sm text-white outline-none"
+                                    <SchoolAutocomplete
                                         value={almaMater}
-                                        onChange={(event) =>
-                                            setAlmaMater(event.target.value)
-                                        }
-                                    >
-                                        <option
-                                            value=""
-                                            disabled
-                                        >
-                                            Choose a school
-                                        </option>
-                                        {FBSSchools.map((school) => (
-                                            <option
-                                                key={school.name}
-                                                value={school.name}
-                                            >
-                                                {school.name}
-                                            </option>
-                                        ))}
-                                    </select>
+                                        onChange={setAlmaMater}
+                                    />
                                 </label>
                             </div>
 
@@ -170,12 +180,18 @@ export default function CoachSetup() {
                     </div>
                 </section>
             </div>
+            {error && (
+                <div className="w-1/3 max-w-5xl mx-auto rounded-lg border-2 border-red-500 bg-red-500/20 px-4 py-3 text-center text-sm text-red-200">
+                    {error}
+                </div>
+            )}
             <button
                 type="button"
-                disabled={!isFormComplete}
+                disabled={!isFormComplete || isLoading}
+                onClick={handleBeginPlaythrough}
                 className="w-1/3 max-w-5xl mx-auto rounded-full border-2 border-red-600 bg-red-600 px-6 py-4 text-center text-base font-semibold uppercase tracking-[0.4em] text-white transition duration-300 hover:bg-red-700 hover:border-red-700 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-                Begin Playthrough
+                {isLoading ? 'Creating...' : 'Begin Playthrough'}
             </button>
         </div>
     );

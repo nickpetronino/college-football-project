@@ -59,4 +59,7 @@ module.exports = {
     sendSuccess,
     sendError,
     sendPaginated,
+    // Aliases for backward compatibility with existing controllers
+    success: sendSuccess,
+    error: sendError,
 };
