@@ -1,6 +1,8 @@
-import { useLayoutEffect, useRef, useState } from 'react';
+import { useLayoutEffect, useRef, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { createCoachPlaythroughId } from '../utils/coachPlaythrough';
+import { getMostRecentCoach, type Coach } from '../utils/coachApi';
+import type { School } from '../utils/schoolApi';
 
 export default function Home() {
     const [showCoachPanel, setShowCoachPanel] = useState(false);
@@ -8,6 +10,8 @@ export default function Home() {
     const coachPanelRef = useRef<HTMLDivElement>(null);
     const navigate = useNavigate();
     const [panelHeight, setPanelHeight] = useState(0);
+    const [mostRecentCoach, setMostRecentCoach] = useState<Coach | null>(null);
+    const [loadingCoach, setLoadingCoach] = useState(false);
     const verticalPadding = showCoachPanel ? 56 : 40;
     const cardStyle = {
         maxWidth: showCoachPanel ? 'min(1040px,100%)' : 'min(780px,100%)',
@@ -18,6 +22,39 @@ export default function Home() {
     const startNewDynasty = () => {
         const coachId = createCoachPlaythroughId();
         navigate(`/${coachId}/setup`);
+    };
+
+    // Load most recent coach when coach panel is shown
+    useEffect(() => {
+        const loadMostRecentCoach = async () => {
+            if (showCoachPanel) {
+                setLoadingCoach(true);
+                try {
+                    const coach = await getMostRecentCoach();
+                    setMostRecentCoach(coach);
+                } catch (err) {
+                    console.error('Error loading most recent coach:', err);
+                    setMostRecentCoach(null);
+                } finally {
+                    setLoadingCoach(false);
+                }
+            }
+        };
+
+        loadMostRecentCoach();
+    }, [showCoachPanel]);
+
+    const handleContinueCareer = () => {
+        if (mostRecentCoach) {
+            navigate(`/${mostRecentCoach.playthroughId}`);
+        }
+    };
+
+    // Helper to check if school is populated
+    const isSchoolPopulated = (
+        school: School | string
+    ): school is School => {
+        return typeof school === 'object' && school !== null && '_id' in school;
     };
 
     useLayoutEffect(() => {
@@ -145,15 +182,48 @@ export default function Home() {
 
                             <div className="flex flex-col gap-6 md:flex-row">
                                 <div className="flex flex-col gap-6 md:flex-row">
-                                    <div className="flex flex-col flex-1 items-stretch gap-4 rounded-3xl border border-dashed border-slate-600 bg-slate-800/10 p-6 shadow-[0_25px_50px_rgba(15,23,42,0.08)]">
+                                    <div
+                                        onClick={mostRecentCoach ? handleContinueCareer : undefined}
+                                        className={`flex flex-col flex-1 items-stretch gap-4 rounded-3xl border p-6 shadow-[0_25px_50px_rgba(15,23,42,0.08)] ${
+                                            mostRecentCoach
+                                                ? 'border-amber-500/60 bg-gradient-to-br from-amber-500/20 via-amber-400/20 to-transparent cursor-pointer transition hover:scale-[1.02] hover:shadow-[0_30px_60px_rgba(234,179,8,0.3)]'
+                                                : 'border-dashed border-slate-600 bg-slate-800/10'
+                                        }`}
+                                    >
                                         <p className="text-lg font-semibold text-slate-900">
                                             Continue Last Career
                                         </p>
-                                        <p className="text-sm text-slate-800">
-                                            Slot reserved here for a quick
-                                            continue card once we track the most
-                                            recent save state.
-                                        </p>
+                                        {loadingCoach ? (
+                                            <p className="text-sm text-slate-800">
+                                                Loading...
+                                            </p>
+                                        ) : mostRecentCoach ? (
+                                            <div className="flex items-center gap-4">
+                                                {isSchoolPopulated(mostRecentCoach.selectedTeam) &&
+                                                    mostRecentCoach.selectedTeam.icon && (
+                                                        <img
+                                                            src={mostRecentCoach.selectedTeam.icon}
+                                                            alt={mostRecentCoach.selectedTeam.name}
+                                                            className="w-40 h-40 rounded flex-shrink-0"
+                                                        />
+                                                    )}
+                                                <div className="flex flex-col justify-center">
+                                                    <p className="text-lg font-semibold text-slate-900">
+                                                        {mostRecentCoach.firstName}{' '}
+                                                        {mostRecentCoach.lastName}
+                                                    </p>
+                                                    {isSchoolPopulated(mostRecentCoach.selectedTeam) && (
+                                                        <p className="text-sm text-slate-700">
+                                                            {mostRecentCoach.selectedTeam.name}
+                                                        </p>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        ) : (
+                                            <p className="text-sm text-slate-800">
+                                                No previous career found. Start a new one!
+                                            </p>
+                                        )}
                                     </div>
 
                                     <div className="flex flex-1 flex-col gap-4">

@@ -58,9 +58,8 @@ export default function CoachSetup() {
                 pipeline: pipeline.trim(),
             });
 
-            // Navigate to home page after successful creation
-            // TODO: Navigate to coach dashboard/landing page when available
-            navigate('/');
+            // Navigate to playthrough home page after successful creation
+            navigate(`/${coachId}`);
         } catch (err) {
             setError(
                 err instanceof Error

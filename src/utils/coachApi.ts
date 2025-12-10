@@ -123,3 +123,23 @@ export const getAllCoaches = async (): Promise<Coach[]> => {
     return data.data || data;
 };
 
+/**
+ * Get most recently modified coach
+ */
+export const getMostRecentCoach = async (): Promise<Coach | null> => {
+    const response = await fetch(`${API_BASE_URL}/coaches/most-recent`);
+
+    if (response.status === 404) {
+        return null;
+    }
+
+    if (!response.ok) {
+        throw new Error(
+            `Failed to fetch most recent coach: ${response.statusText}`
+        );
+    }
+
+    const data = await response.json();
+    return data.data || data;
+};
+

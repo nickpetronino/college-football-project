@@ -100,10 +100,30 @@ const getAllCoaches = asyncHandler(async (req, res) => {
     responseHandler.success(res, coaches, 'Coaches retrieved successfully');
 });
 
+/**
+ * @desc    Get most recently modified coach
+ * @route   GET /api/v1/coaches/most-recent
+ * @access  Public
+ */
+const getMostRecentCoach = asyncHandler(async (req, res) => {
+    const coach = await Coach.find()
+        .populate('selectedTeam almaMater')
+        .sort({ updatedAt: -1 })
+        .limit(1)
+        .select('-__v');
+
+    if (!coach || coach.length === 0) {
+        return responseHandler.error(res, 'No coaches found', 404);
+    }
+
+    responseHandler.success(res, coach[0], 'Most recent coach retrieved successfully');
+});
+
 module.exports = {
     createCoach,
     getCoachByPlaythroughId,
     updateCoach,
     getAllCoaches,
+    getMostRecentCoach,
 };
 

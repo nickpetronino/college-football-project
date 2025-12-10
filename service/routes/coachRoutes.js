@@ -9,9 +9,13 @@ const {
     getCoachByPlaythroughId,
     updateCoach,
     getAllCoaches,
+    getMostRecentCoach,
 } = require('../controllers/coachController');
 
 const router = express.Router();
+
+// Get most recently modified coach (must be before /:playthroughId)
+router.get('/most-recent', getMostRecentCoach);
 
 // Get all coaches
 router.get('/', getAllCoaches);
