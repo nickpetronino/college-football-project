@@ -1,4 +1,4 @@
-import { Box } from '@mui/material';
+import { Box, Container } from '@mui/material';
 import DynastyAppBar from '../navigation/DynastyAppBar';
 import DynastySideNav from '../navigation/DynastySideNav';
 
@@ -8,36 +8,38 @@ interface DynastyLayoutProps {
 
 export default function DynastyLayout({ children }: DynastyLayoutProps) {
     return (
-        <Box
-            sx={{
-                display: 'flex',
-                flexDirection: 'column',
-                bgcolor: 'red',
-                height: '100vh',
-                width: '100vw',
-            }}
-        >
-            <Box>
-                <DynastyAppBar />
-            </Box>
+        <Container maxWidth="xl">
             <Box
                 sx={{
                     display: 'flex',
-                    flex: 1,
-                    overflow: 'hidden',
+                    flexDirection: 'column',
+                    bgcolor: 'red',
+                    height: '100vh',
+                    width: '100%',
                 }}
             >
-                <DynastySideNav />
+                <Box>
+                    <DynastyAppBar />
+                </Box>
                 <Box
-                    component="main"
                     sx={{
-                        flexGrow: 1,
-                        overflow: 'auto',
+                        display: 'flex',
+                        flex: 1,
+                        overflow: 'hidden',
                     }}
                 >
-                    {children}
+                    <DynastySideNav />
+                    <Box
+                        component="main"
+                        sx={{
+                            flexGrow: 1,
+                            overflow: 'auto',
+                        }}
+                    >
+                        {children}
+                    </Box>
                 </Box>
             </Box>
-        </Box>
+        </Container>
     );
 }
